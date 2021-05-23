@@ -9,7 +9,7 @@ var margin = {
   left: 100
 };
 
-var dotradius = 20
+var dotradius = 15
 
 var width = svgWidth - margin.left - margin.right;
 var height = svgHeight - margin.top - margin.bottom;
@@ -70,14 +70,14 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
     .attr("opacity", "0.75")
     ;
 
-
-//     //Step 5a. Add State Labels to circles
-// var elemEnter = elem.enter().append("g")
-
-//  elemEnter.append("text")
-//  	.attr("dx", dotradius/-2) //move label a bit to left of center
-//  	.text(d=>d.abbr)
-
+    //Step 5a. Add State Labels to circles
+    var labelDots = circlesGroup.selectAll("text")
+    .data(healthData)
+    .enter()
+    .append("text").text(d=>d.abbr)
+    .attr("class", "stateText")
+    .attr("x", d => xLinearScale(d.smokes))
+    .attr("y", d => yLinearScale(d.obesity))
 
 
 
@@ -97,7 +97,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
     //   .attr("class", "tooltip")
     //   .offset([80, -60])
     //   .html(function(d) {
-    //     return (`${d.abbr}<br>Smoking Rate: ${d.smokes}<br>Obesity: ${d.obesity}`);
+    //     return (`${d.state}<br>Smoking Rate: ${d.smokes}<br>Obesity: ${d.obesity}`);
     //   });
 
     // // Step 7: Create tooltip in the chart
