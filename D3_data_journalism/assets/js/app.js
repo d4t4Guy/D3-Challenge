@@ -1,4 +1,3 @@
-// @TODO: YOUR CODE HERE!
 var svgWidth = 960;
 var svgHeight = 500;
 
@@ -9,7 +8,7 @@ var margin = {
   left: 100
 };
 
-var dotradius = 15
+var dotradius = 10
 
 var width = svgWidth - margin.left - margin.right;
 var height = svgHeight - margin.top - margin.bottom;
@@ -36,12 +35,13 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
     // Step 2: Create scale functions
     // ==============================
     var xLinearScale = d3.scaleLinear()
-      .domain([d3.min(healthData, d => d.smokes)/2, d3.max(healthData, d => d.smokes)])
-      .range([10, width]);
+      .domain([0, d3.max(healthData, d => d.smokes)])
+      .range([0, width]);
 
     var yLinearScale = d3.scaleLinear()
       .domain([0, d3.max(healthData, d => d.obesity)])
       .range([height, 0]);
+
 
     // Step 3: Create axis functions
     // ==============================
@@ -59,29 +59,29 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
 
     // Step 5: Create Circles
     // ==============================
-    var circlesGroup = chartGroup.selectAll("circle")
-    .data(healthData)
-    .enter()
-    .append("circle")
-    .attr("cx", d => xLinearScale(d.smokes))
-    .attr("cy", d => yLinearScale(d.obesity))
-    .attr("r", dotradius)
-    .attr("fill", "steelblue")
-    .attr("opacity", "0.75")
-    ;
 
-    //Step 5a. Add State Labels to circles
-    var labelDots = circlesGroup.selectAll("text")
-    .data(healthData)
-    .enter()
-    .append("text").text(d=>d.abbr)
-    .attr("class", "stateText")
-    .attr("x", d => xLinearScale(d.smokes))
-    .attr("y", d => yLinearScale(d.obesity))
+    //create <g>....</g> container for circles and labels
+    var dotsLabeled = svg.selectAll("dotsLabeled")
+      .data(healthData)
+      .enter()
+      .append("g");
 
+    dotsLabeled.append("circle")
+      .attr("class", "stateCircle")
+      .attr("r", dotradius)
+      .attr("cx", d => xLinearScale(d.smokes))
+      .attr("cy", d => yLinearScale(d.obesity))
+      //.attr("opacity", ".9")
+      ;       
 
-
-
+ 
+    dotsLabeled.append("text")
+      .text(d=>d.abbr)
+      .attr("class", "stateText")
+      .attr("font-size", dotradius)
+      .attr("x", d => xLinearScale(d.smokes))
+      //shift label down so that it fits in circle
+      .attr("y", d => yLinearScale(d.obesity));
 
 
 
