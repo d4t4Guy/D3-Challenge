@@ -9,7 +9,7 @@ var margin = {
 };
 
 var dotradius = 10
-
+var labelArea = 100
 var width = svgWidth - margin.left - margin.right;
 var height = svgHeight - margin.top - margin.bottom;
 
@@ -35,12 +35,13 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
     // Step 2: Create scale functions
     // ==============================
     var xLinearScale = d3.scaleLinear()
-      .domain([0, d3.max(healthData, d => d.smokes)])
-      .range([0, width]);
+      .domain([0, d3.max(healthData, d => d.smokes)])  //d3.min(healthData, d => d.smokes)
+      .range([margin.left+labelArea, width-margin.right]);  //100==labelArea
 
     var yLinearScale = d3.scaleLinear()
-      .domain([0, d3.max(healthData, d => d.obesity)])
-      .range([height, 0]);
+      .domain([d3.min(healthData, d=>d.obesity), d3.max(healthData, d => d.obesity)])
+      .range([height - margin.top-labelArea, margin.top]);
+      //.range(height-margin.top-100, margin.bottom )
 
 
     // Step 3: Create axis functions
@@ -51,10 +52,11 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
     // Step 4: Append Axes to the chart
     // ==============================
     chartGroup.append("g")
-      .attr("transform", `translate(0, ${height})`)
+      .attr("transform", `translate(-100, ${height})`)
       .call(bottomAxis);
 
     chartGroup.append("g")
+      .attr("transform", `translate(0, 0)`)
       .call(leftAxis);
 
     // Step 5: Create Circles
@@ -66,6 +68,8 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
       .enter()
       .append("g");
 
+   //create filled circles on scatterplot   
+
     dotsLabeled.append("circle")
       .attr("class", "stateCircle")
       .attr("r", dotradius)
@@ -74,14 +78,14 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
       //.attr("opacity", ".9")
       ;       
 
- 
+ //label the circles
     dotsLabeled.append("text")
       .text(d=>d.abbr)
       .attr("class", "stateText")
       .attr("font-size", dotradius)
       .attr("x", d => xLinearScale(d.smokes))
-      //shift label down so that it fits in circle
-      .attr("y", d => yLinearScale(d.obesity));
+      //shift label down so that it centers in circle
+      .attr("y", d => yLinearScale(d.obesity)+dotradius/4);
 
 
 
